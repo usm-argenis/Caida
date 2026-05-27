@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "buildCommand": "bash vercel-build.sh",
+  "outputDirectory": "build/web"
+}
