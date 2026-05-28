@@ -109,15 +109,15 @@ class _HumanFanWidget extends StatelessWidget {
     final count = cards.length;
     if (count == 0) return const SizedBox.shrink();
 
-    const cardW = 72.0;
-    const cardH = 110.0;
-    const fanH = 150.0; // Reducido de 220 a 150 para que las cartas queden mucho más cerca del avatar
-    const fanW = 320.0;
+    const cardW = 54.0;
+    const cardH = 82.0;
+    const fanH = 120.0;
+    const fanW = 280.0;
 
     // Punto de origen: centro-abajo del widget
     const originX = fanW / 2;
-    const originY = 215.0; // Ajustado para que la punta inferior de la carta central toque el borde inferior del widget
-    const radius = 120.0; // Abanico más ajustado y elegante
+    const originY = 175.0;
+    const radius = 100.0;
 
     final totalAngle = math.min((count - 1) * 16.0, 64.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;
@@ -154,6 +154,7 @@ class _HumanFanWidget extends StatelessWidget {
                   isPlayable: isActive,
                   width: cardW,
                   height: cardH,
+                  onTap: isActive ? () => onCardTap(card) : null,
                 ),
               ),
             ),

@@ -72,7 +72,6 @@ class GameScreen extends ConsumerWidget {
                     position: PlayerPosition.north,
                     deckWidget: _getDeckWidget(gameState, 2),
                     capturedWidget: _getCapturedWidget(gameState, 2),
-                    lastPlayedCardWidget: _getLastPlayedWidget(gameState, 2),
                     speechBubbleText: _getSpeechBubble(gameState, 2),
                   ),
                 ),
@@ -90,7 +89,6 @@ class GameScreen extends ConsumerWidget {
                     position: PlayerPosition.west,
                     deckWidget: _getDeckWidget(gameState, 1),
                     capturedWidget: _getCapturedWidget(gameState, 1),
-                    lastPlayedCardWidget: _getLastPlayedWidget(gameState, 1),
                     speechBubbleText: _getSpeechBubble(gameState, 1),
                   ),
                 ),
@@ -108,7 +106,6 @@ class GameScreen extends ConsumerWidget {
                     position: PlayerPosition.east,
                     deckWidget: _getDeckWidget(gameState, 3),
                     capturedWidget: _getCapturedWidget(gameState, 3),
-                    lastPlayedCardWidget: _getLastPlayedWidget(gameState, 3),
                     speechBubbleText: _getSpeechBubble(gameState, 3),
                   ),
                 ),
@@ -362,16 +359,6 @@ class GameScreen extends ConsumerWidget {
           label: 'Capturas B',
         );
       }
-    }
-    return null;
-  }
-
-  Widget? _getLastPlayedWidget(GameStateModel gameState, int playerIndex) {
-    if (gameState.lastPlayedCard != null && gameState.lastCardPlayerIndex == playerIndex) {
-      return _LastPlayedCardWidget(
-        card: gameState.lastPlayedCard!,
-        playerName: gameState.players[playerIndex].name,
-      );
     }
     return null;
   }
@@ -969,97 +956,6 @@ class _CapturedPileWidget extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// CARTA ÚLTIMA JUGADA (visible con nombre del jugador)
-// ─────────────────────────────────────────────────────────────
-class _LastPlayedCardWidget extends StatefulWidget {
-  final CardModel card;
-  final String playerName;
-  final bool isHuman;
-
-  const _LastPlayedCardWidget({
-    required this.card,
-    required this.playerName,
-    this.isHuman = false,
-  });
-
-  @override
-  State<_LastPlayedCardWidget> createState() => _LastPlayedCardWidgetState();
-}
-
-class _LastPlayedCardWidgetState extends State<_LastPlayedCardWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnim;
-  late Animation<double> _fadeAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 350),
-    );
-    _scaleAnim = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
-    _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (_, child) => FadeTransition(
-        opacity: _fadeAnim,
-        child: Transform.scale(
-          scale: _scaleAnim.value,
-          child: child,
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Label del jugador
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: widget.isHuman
-                  ? AppTheme.accent.withOpacity(0.85)
-                  : AppTheme.cardRed.withOpacity(0.85),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              widget.isHuman ? '🎯 ${widget.playerName}' : '▶ ${widget.playerName}',
-              style: GoogleFonts.lato(
-                color: Colors.white,
-                fontSize: 9,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 3),
-          // La carta
-          CardWidget(
-            card: widget.card,
-            width: 52,
-            height: 78,
-            isPlayable: false,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 // ─────────────────────────────────────────────────────────────
 // PATRÓN DE TAPETE (felt texture)
