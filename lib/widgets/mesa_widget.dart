@@ -1,5 +1,7 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../models/game_state_model.dart';
+import '../models/card_model.dart';
 import 'card_widget.dart';
 
 /// Mesa central del juego - muestra las cartas en mesa sobre el tapete
@@ -32,31 +34,80 @@ class MesaWidget extends StatelessWidget {
     );
   }
 
+  List<int> _getRowSizes(int n, bool isSmall) {
+    if (n <= 0) return [];
+    if (n >= 7) {
+      return [3, 2, 2, n - 7];
+    }
+    if (n == 6) {
+      return [2, 2, 2];
+    }
+    // n < 6
+    if (isSmall) {
+      if (n <= 2) return [n];
+      if (n == 3) return [2, 1];
+      if (n == 4) return [2, 2];
+      if (n == 5) return [2, 2, 1];
+    } else {
+      if (n <= 3) return [n];
+      if (n == 4) return [2, 2];
+      if (n == 5) return [3, 2];
+    }
+    return [n];
+  }
+
+  List<List<CardModel>> _chunkCards(List<CardModel> cards, List<int> sizes) {
+    List<List<CardModel>> rows = [];
+    int index = 0;
+    for (final size in sizes) {
+      if (size <= 0) continue;
+      final end = math.min(index + size, cards.length);
+      if (index < end) {
+        rows.add(cards.sublist(index, end));
+        index = end;
+      }
+    }
+    if (index < cards.length) {
+      rows.add(cards.sublist(index));
+    }
+    return rows;
+  }
+
   Widget _buildCardsOnMesa(bool isSmall) {
     final cardW = isSmall ? 60.0 : 70.0;
     final cardH = isSmall ? 90.0 : 105.0;
 
-    // Layout en grid/wrap centrado sobre el tapete
-    return Container(
-      constraints: BoxConstraints(
-        maxWidth: isSmall ? 135.0 : 235.0,
-      ),
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 10,
-        runSpacing: 10,
-        children: gameState.mesa.map((card) {
-          final key = CardWidget.cardKeys.putIfAbsent(card.id, () => GlobalKey());
-          return CardWidget(
-            key: key,
-            card: card,
-            width: cardW,
-            height: cardH,
-            isPlayable: false,
-          );
-        }).toList(),
-      ),
+    final sizes = _getRowSizes(gameState.mesa.length, isSmall);
+    final rows = _chunkCards(gameState.mesa, sizes);
+
+    // Layout simétrico en Column + Row para máxima precisión geométrica
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: rows.map((rowCards) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: rowCards.map((card) {
+              final key = CardWidget.cardKeys.putIfAbsent(card.id, () => GlobalKey());
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: CardWidget(
+                  key: key,
+                  card: card,
+                  width: cardW,
+                  height: cardH,
+                  isPlayable: false,
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      }).toList(),
     );
   }
 }

@@ -603,20 +603,23 @@ class GameManager {
       capturedCount: currentPlayer.capturedCount + totalCaptured,
     );
 
+    // La mesa limpia NO se aplica en la tercera ronda (roundNumber == 3)
+    final isMesaLimpia = captureResult.mesaLimpia && state.roundNumber != 3;
+
     var newState = state.copyWith(
       players: players,
       mesa: newMesa,
       lastCapture: captureResult.capturedCards,
-      mesaLimpia: captureResult.mesaLimpia,
+      mesaLimpia: isMesaLimpia,
       lastCapturerId: currentPlayer.id, // Rastrear quién capturó por última vez
       clearLastPlayedCard: true,
-      message: captureResult.mesaLimpia
+      message: isMesaLimpia
           ? '¡Mesa limpia! ${currentPlayer.name} captura todo'
           : '${currentPlayer.name} captura ${captureResult.capturedCards.length + 1} carta(s)',
     );
 
-    // Aplicar bonus de mesa limpia
-    if (captureResult.mesaLimpia) {
+    // Aplicar bonus de mesa limpia (solo si aplica)
+    if (isMesaLimpia) {
       newState =
           ScoreEngine.applyMesaLimpiaBonus(newState, currentPlayer.id);
     }

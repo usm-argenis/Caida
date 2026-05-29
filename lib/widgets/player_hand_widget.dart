@@ -116,8 +116,8 @@ class _HumanFanWidget extends StatelessWidget {
     final count = cards.length;
     if (count == 0) return const SizedBox.shrink();
 
-    final cardW = isSmall ? 56.0 : 65.0;
-    final cardH = isSmall ? 86.0 : 100.0;
+    final cardW = isSmall ? 62.0 : 65.0;
+    final cardH = isSmall ? 92.0 : 100.0;
     final fanH = isSmall ? 110.0 : 130.0;
     final fanW = isSmall ? 260.0 : 300.0;
 

@@ -86,20 +86,19 @@ class AiPlayerPanel extends StatelessWidget {
                 child: SpeechBubble(text: speechBubbleText!),
               ),
             ),
-          // Pilas de mazo/capturas a la izquierda del avatar (fuera del SizedBox)
-          if (deckWidget != null || capturedWidget != null)
+          // Mazo: a la IZQUIERDA en pantalla = DERECHA del Norte mirando a la mesa
+          if (deckWidget != null)
             Positioned(
               right: isSmall ? 136 : 166,
               top: 8,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (deckWidget != null) deckWidget!,
-                  if (deckWidget != null && capturedWidget != null) const SizedBox(height: 4),
-                  if (capturedWidget != null) capturedWidget!,
-                ],
-              ),
+              child: deckWidget!,
+            ),
+          // Capturas: a la DERECHA en pantalla = IZQUIERDA del Norte mirando a la mesa
+          if (capturedWidget != null)
+            Positioned(
+              left: isSmall ? 136 : 166,
+              top: 8,
+              child: capturedWidget!,
             ),
           // Última carta jugada a la derecha del avatar (fuera del SizedBox)
           if (lastPlayedCardWidget != null)
@@ -155,22 +154,21 @@ class AiPlayerPanel extends StatelessWidget {
                 child: SpeechBubble(text: speechBubbleText!),
               ),
             ),
-          // Pilas de mazo/capturas debajo del avatar centrado
-          if (deckWidget != null || capturedWidget != null)
+          // Capturas: ARRIBA del avatar en pantalla = IZQUIERDA del Oeste mirando a la mesa
+          if (capturedWidget != null)
             Positioned(
-              top: isSmall ? 100 : 130, // por debajo del avatar centrado
+              bottom: isSmall ? 142 : 182,
               left: 0,
               right: 0,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (deckWidget != null) deckWidget!,
-                    if (deckWidget != null && capturedWidget != null) const SizedBox(height: 4),
-                    if (capturedWidget != null) capturedWidget!,
-                  ],
-                ),
-              ),
+              child: Center(child: capturedWidget!),
+            ),
+          // Mazo: ABAJO del avatar en pantalla = DERECHA del Oeste mirando a la mesa
+          if (deckWidget != null)
+            Positioned(
+              top: isSmall ? 142 : 182,
+              left: 0,
+              right: 0,
+              child: Center(child: deckWidget!),
             ),
           if (lastPlayedCardWidget != null)
             Positioned(
@@ -225,22 +223,21 @@ class AiPlayerPanel extends StatelessWidget {
                 child: SpeechBubble(text: speechBubbleText!),
               ),
             ),
-          // Pilas de mazo/capturas debajo del avatar centrado
-          if (deckWidget != null || capturedWidget != null)
+          // Capturas: ABAJO del avatar en pantalla = IZQUIERDA del Este mirando a la mesa
+          if (capturedWidget != null)
             Positioned(
-              top: isSmall ? 100 : 130, // por debajo del avatar centrado
+              top: isSmall ? 142 : 182,
               left: 0,
               right: 0,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (deckWidget != null) deckWidget!,
-                    if (deckWidget != null && capturedWidget != null) const SizedBox(height: 4),
-                    if (capturedWidget != null) capturedWidget!,
-                  ],
-                ),
-              ),
+              child: Center(child: capturedWidget!),
+            ),
+          // Mazo: ARRIBA del avatar en pantalla = DERECHA del Este mirando a la mesa
+          if (deckWidget != null)
+            Positioned(
+              bottom: isSmall ? 142 : 182,
+              left: 0,
+              right: 0,
+              child: Center(child: deckWidget!),
             ),
           if (lastPlayedCardWidget != null)
             Positioned(

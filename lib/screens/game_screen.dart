@@ -272,18 +272,23 @@ class GameScreen extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // Mazo (si el humano reparte)
-        if (humanHasDeck)
-          Padding(
-            padding: const EdgeInsets.only(right: 10, bottom: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('📦', style: TextStyle(fontSize: 9)),
-                _DeckPileWidget(count: gameState.deck.length),
-              ],
-            ),
-          ),
+        // Capturas del equipo A - IZQUIERDA en pantalla = IZQUIERDA del Sur mirando a la mesa
+        SizedBox(
+          width: 56,
+          child: humanCapturedWidget != null
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('✅', style: TextStyle(fontSize: 9)),
+                      humanCapturedWidget,
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+        const SizedBox(width: 10),
 
         // Mano del jugador con avatar
         Column(
@@ -307,19 +312,24 @@ class GameScreen extends ConsumerWidget {
             const SizedBox(height: 8), // Separación para estar súper abajo
           ],
         ),
+        const SizedBox(width: 10),
 
-        // Capturas del equipo A
-        if (humanCapturedWidget != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 10, bottom: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('✅', style: TextStyle(fontSize: 9)),
-                humanCapturedWidget,
-              ],
-            ),
-          ),
+        // Mazo (si el humano reparte) - DERECHA en pantalla = DERECHA del Sur mirando a la mesa
+        SizedBox(
+          width: 56,
+          child: humanHasDeck
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('📦', style: TextStyle(fontSize: 9)),
+                      _DeckPileWidget(count: gameState.deck.length),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
       ],
     );
   }
