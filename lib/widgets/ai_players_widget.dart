@@ -43,69 +43,68 @@ class AiPlayerPanel extends StatelessWidget {
 
   // ── NORTE: avatar en top-center, cartas en abanico hacia abajo ──
   Widget _buildNorth() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (deckWidget != null || capturedWidget != null) ...[
-          Padding(
-            padding: const EdgeInsets.only(right: 6, top: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (deckWidget != null) deckWidget!,
-                if (deckWidget != null && capturedWidget != null) const SizedBox(height: 4),
-                if (capturedWidget != null) capturedWidget!,
-              ],
+    return SizedBox(
+      width: 160,
+      height: 130,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Cartas en abanico — se extienden HACIA ABAJO desde el avatar (top center)
+          Positioned.fill(
+            child: _NorthFanWidget(
+              count: player.hand.length,
+              isFaceDown: true,
             ),
           ),
-        ],
-        SizedBox(
-          width: 160,
-          height: 130,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              // Cartas en abanico — se extienden HACIA ABAJO desde el avatar (top center)
-              Positioned.fill(
-                child: _NorthFanWidget(
-                  count: player.hand.length,
-                  isFaceDown: true,
-                ),
+          // Avatar centrado en la parte superior
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildAvatar(size: 48),
+                  const SizedBox(height: 2),
+                  _buildNameTag(),
+                ],
               ),
-              // Avatar centrado en la parte superior
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildAvatar(size: 48),
-                      const SizedBox(height: 2),
-                      _buildNameTag(),
-                    ],
-                  ),
-                ),
-              ),
-              if (speechBubbleText != null)
-                Positioned(
-                  top: -38,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: SpeechBubble(text: speechBubbleText!),
-                  ),
-                ),
-            ],
+            ),
           ),
-        ),
-        if (lastPlayedCardWidget != null) ...[
-          const SizedBox(width: 8),
-          lastPlayedCardWidget!,
+          if (speechBubbleText != null)
+            Positioned(
+              top: -38,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: SpeechBubble(text: speechBubbleText!),
+              ),
+            ),
+          // Pilas de mazo/capturas a la izquierda del avatar (fuera del SizedBox)
+          if (deckWidget != null || capturedWidget != null)
+            Positioned(
+              right: 166,
+              top: 8,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (deckWidget != null) deckWidget!,
+                  if (deckWidget != null && capturedWidget != null) const SizedBox(height: 4),
+                  if (capturedWidget != null) capturedWidget!,
+                ],
+              ),
+            ),
+          // Última carta jugada a la derecha del avatar (fuera del SizedBox)
+          if (lastPlayedCardWidget != null)
+            Positioned(
+              left: 168,
+              top: 8,
+              child: lastPlayedCardWidget!,
+            ),
         ],
-      ],
+      ),
     );
   }
 
@@ -124,8 +123,9 @@ class AiPlayerPanel extends StatelessWidget {
               isFaceDown: true,
             ),
           ),
-          // Avatar en la parte inferior izquierda
+          // Avatar centrado verticalmente
           Positioned(
+            top: 0,
             bottom: 0,
             left: 0,
             right: 0,
@@ -142,17 +142,17 @@ class AiPlayerPanel extends StatelessWidget {
           ),
           if (speechBubbleText != null)
             Positioned(
-              bottom: 54,
+              bottom: 130, // por encima del avatar centrado
               left: 0,
               right: 0,
               child: Center(
                 child: SpeechBubble(text: speechBubbleText!),
               ),
             ),
-          // Pilas de mazo/capturas encima del avatar
+          // Pilas de mazo/capturas debajo del avatar centrado
           if (deckWidget != null || capturedWidget != null)
             Positioned(
-              bottom: 70,
+              top: 130, // por debajo del avatar centrado
               left: 0,
               right: 0,
               child: Center(
@@ -168,8 +168,8 @@ class AiPlayerPanel extends StatelessWidget {
             ),
           if (lastPlayedCardWidget != null)
             Positioned(
-              right: -60,
-              top: 40,
+              right: -55,
+              top: 66, // alineado con el centro del avatar
               child: lastPlayedCardWidget!,
             ),
         ],
@@ -192,8 +192,9 @@ class AiPlayerPanel extends StatelessWidget {
               isFaceDown: true,
             ),
           ),
-          // Avatar en la parte inferior derecha
+          // Avatar centrado verticalmente
           Positioned(
+            top: 0,
             bottom: 0,
             left: 0,
             right: 0,
@@ -210,17 +211,17 @@ class AiPlayerPanel extends StatelessWidget {
           ),
           if (speechBubbleText != null)
             Positioned(
-              bottom: 54,
+              bottom: 130, // por encima del avatar centrado
               left: 0,
               right: 0,
               child: Center(
                 child: SpeechBubble(text: speechBubbleText!),
               ),
             ),
-          // Pilas de mazo/capturas
+          // Pilas de mazo/capturas debajo del avatar centrado
           if (deckWidget != null || capturedWidget != null)
             Positioned(
-              bottom: 70,
+              top: 130, // por debajo del avatar centrado
               left: 0,
               right: 0,
               child: Center(
@@ -236,8 +237,8 @@ class AiPlayerPanel extends StatelessWidget {
             ),
           if (lastPlayedCardWidget != null)
             Positioned(
-              left: -60,
-              top: 40,
+              left: -55,
+              top: 66, // alineado con el centro del avatar
               child: lastPlayedCardWidget!,
             ),
         ],
@@ -329,8 +330,8 @@ class _NorthFanWidget extends StatelessWidget {
     const cardW = 32.0;
     const cardH = 48.0;
     const originX = 80.0; // centro horizontal del SizedBox(width:160)
-    const originY = 24.0; // justo detrás del avatar
-    const radius = 95.0;
+    const originY = 24.0; // justo en el centro del avatar
+    const radius = 56.0;  // muy cerca del círculo del avatar
     final totalAngle = math.min((count - 1) * 18.0, 80.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;
     // Norte: apunta hacia abajo (math.pi/2)
@@ -349,7 +350,7 @@ class _NorthFanWidget extends StatelessWidget {
           left: dx,
           top: dy,
           child: Transform.rotate(
-            angle: angle,
+            angle: angle + math.pi,
             child: CardWidget(
               faceDown: isFaceDown,
               width: cardW,
@@ -377,9 +378,9 @@ class _WestFanWidget extends StatelessWidget {
 
     const cardW = 32.0;
     const cardH = 48.0;
-    const originX = 20.0; // lado izquierdo del widget
-    const originY = 155.0; // cerca del avatar (abajo)
-    const radius = 90.0;
+    const originX = 55.0; // centro del avatar (width=110)
+    const originY = 90.0; // centro del avatar (height=180)
+    const radius = 56.0;  // muy cerca del círculo del avatar
     final totalAngle = math.min((count - 1) * 18.0, 70.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;
     // Oeste: apunta hacia la derecha (0 radianes)
@@ -426,12 +427,12 @@ class _EastFanWidget extends StatelessWidget {
 
     const cardW = 32.0;
     const cardH = 48.0;
-    const originX = 90.0; // lado derecho del widget (width=110)
-    const originY = 155.0; // cerca del avatar (abajo)
-    const radius = 90.0;
+    const originX = 55.0; // centro del avatar (width=110)
+    const originY = 90.0; // centro del avatar (height=180)
+    const radius = 56.0;  // muy cerca del círculo del avatar
     final totalAngle = math.min((count - 1) * 18.0, 70.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;
-    // Este: apunta hacia la izquierda (math.pi)
+    // Este: apunta hacia la izquierda (math.pi radianes)
     const baseAngle = math.pi;
 
     return Stack(
@@ -447,7 +448,7 @@ class _EastFanWidget extends StatelessWidget {
           left: dx,
           top: dy,
           child: Transform.rotate(
-            angle: -(angle + math.pi / 2),
+            angle: angle - math.pi / 2,
             child: CardWidget(
               faceDown: isFaceDown,
               width: cardW,
