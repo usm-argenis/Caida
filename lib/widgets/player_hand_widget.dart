@@ -116,15 +116,15 @@ class _HumanFanWidget extends StatelessWidget {
     final count = cards.length;
     if (count == 0) return const SizedBox.shrink();
 
-    final cardW = isSmall ? 46.0 : 54.0;
-    final cardH = isSmall ? 70.0 : 82.0;
-    final fanH = isSmall ? 100.0 : 120.0;
-    final fanW = isSmall ? 240.0 : 280.0;
+    final cardW = isSmall ? 56.0 : 65.0;
+    final cardH = isSmall ? 86.0 : 100.0;
+    final fanH = isSmall ? 110.0 : 130.0;
+    final fanW = isSmall ? 260.0 : 300.0;
 
     // Punto de origen: centro-abajo del widget
     final originX = fanW / 2;
-    final originY = isSmall ? 145.0 : 175.0;
-    final radius = isSmall ? 80.0 : 100.0;
+    final originY = isSmall ? 160.0 : 190.0;
+    final radius = isSmall ? 90.0 : 110.0;
 
     final totalAngle = math.min((count - 1) * 16.0, 64.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;

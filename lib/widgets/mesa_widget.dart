@@ -11,6 +11,10 @@ class MesaWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenW = MediaQuery.of(context).size.width;
+    final screenH = MediaQuery.of(context).size.height;
+    final isSmall = screenW < 480 || screenH < 750;
+
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -20,7 +24,7 @@ class MesaWidget extends StatelessWidget {
           // Cartas en la mesa o placeholder
           gameState.mesa.isEmpty
               ? const SizedBox.shrink()
-              : _buildCardsOnMesa(),
+              : _buildCardsOnMesa(isSmall),
 
           if (child != null) child!,
         ],
@@ -28,23 +32,31 @@ class MesaWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCardsOnMesa() {
+  Widget _buildCardsOnMesa(bool isSmall) {
+    final cardW = isSmall ? 60.0 : 70.0;
+    final cardH = isSmall ? 90.0 : 105.0;
+
     // Layout en grid/wrap centrado sobre el tapete
-    return Wrap(
-      alignment: WrapAlignment.center,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 10,
-      runSpacing: 10,
-      children: gameState.mesa.map((card) {
-        final key = CardWidget.cardKeys.putIfAbsent(card.id, () => GlobalKey());
-        return CardWidget(
-          key: key,
-          card: card,
-          width: 55,
-          height: 85,
-          isPlayable: false,
-        );
-      }).toList(),
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: isSmall ? 135.0 : 235.0,
+      ),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 10,
+        runSpacing: 10,
+        children: gameState.mesa.map((card) {
+          final key = CardWidget.cardKeys.putIfAbsent(card.id, () => GlobalKey());
+          return CardWidget(
+            key: key,
+            card: card,
+            width: cardW,
+            height: cardH,
+            isPlayable: false,
+          );
+        }).toList(),
+      ),
     );
   }
 }
