@@ -126,7 +126,9 @@ class _HumanFanWidget extends StatelessWidget {
     final originY = isSmall ? 160.0 : 190.0;
     final radius = isSmall ? 90.0 : 110.0;
 
-    final totalAngle = math.min((count - 1) * 16.0, 64.0) * math.pi / 180;
+    final angleStep = isSmall ? 11.0 : 16.0;
+    final maxSpread = isSmall ? 40.0 : 64.0;
+    final totalAngle = math.min((count - 1) * angleStep, maxSpread) * math.pi / 180;
     final startAngle = -totalAngle / 2;
     // Apunta hacia ARRIBA (-math.pi/2)
     const baseAngle = -math.pi / 2;

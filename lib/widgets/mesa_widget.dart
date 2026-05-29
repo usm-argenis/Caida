@@ -1,21 +1,24 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/game_state_model.dart';
 import '../models/card_model.dart';
+import '../providers/game_provider.dart';
 import 'card_widget.dart';
 
 /// Mesa central del juego - muestra las cartas en mesa sobre el tapete
-class MesaWidget extends StatelessWidget {
+class MesaWidget extends ConsumerWidget {
   final GameStateModel gameState;
   final Widget? child;
 
   const MesaWidget({super.key, required this.gameState, this.child});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final screenW = MediaQuery.of(context).size.width;
     final screenH = MediaQuery.of(context).size.height;
     final isSmall = screenW < 480 || screenH < 750;
+    final hiddenIds = ref.watch(hiddenMesaCardsProvider);
 
     return SizedBox(
       width: double.infinity,
@@ -26,7 +29,7 @@ class MesaWidget extends StatelessWidget {
           // Cartas en la mesa o placeholder
           gameState.mesa.isEmpty
               ? const SizedBox.shrink()
-              : _buildCardsOnMesa(isSmall),
+              : _buildCardsOnMesa(isSmall, hiddenIds),
 
           if (child != null) child!,
         ],
@@ -73,7 +76,7 @@ class MesaWidget extends StatelessWidget {
     return rows;
   }
 
-  Widget _buildCardsOnMesa(bool isSmall) {
+  Widget _buildCardsOnMesa(bool isSmall, Set<String> hiddenIds) {
     final cardW = isSmall ? 60.0 : 70.0;
     final cardH = isSmall ? 90.0 : 105.0;
 
@@ -94,14 +97,18 @@ class MesaWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: rowCards.map((card) {
               final key = CardWidget.cardKeys.putIfAbsent(card.id, () => GlobalKey());
+              final isHidden = hiddenIds.contains(card.id);
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: CardWidget(
-                  key: key,
-                  card: card,
-                  width: cardW,
-                  height: cardH,
-                  isPlayable: false,
+                child: Opacity(
+                  opacity: isHidden ? 0.0 : 1.0,
+                  child: CardWidget(
+                    key: key,
+                    card: card,
+                    width: cardW,
+                    height: cardH,
+                    isPlayable: false,
+                  ),
                 ),
               );
             }).toList(),

@@ -324,3 +324,6 @@ final isHumanTurnProvider = Provider<bool>((ref) {
 final cantosProvider = Provider((ref) {
   return ref.watch(gameProvider)?.cantos ?? [];
 });
+
+/// Provider temporal para ocultar cartas de la mesa durante las animaciones de captura
+final hiddenMesaCardsProvider = StateProvider<Set<String>>((ref) => {});

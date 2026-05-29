@@ -1029,6 +1029,7 @@ class __GlobalCardPlayAnimationOverlayState
   bool showCaidaText = false;
   Duration animationDuration = const Duration(milliseconds: 500);
   bool isDisposed = false;
+  List<CardModel> slidingStack = [];
 
   @override
   void initState() {
@@ -1043,6 +1044,11 @@ class __GlobalCardPlayAnimationOverlayState
   @override
   void dispose() {
     isDisposed = true;
+    Future.microtask(() {
+      if (ref.context.mounted) {
+        ref.read(hiddenMesaCardsProvider.notifier).state = {};
+      }
+    });
     super.dispose();
   }
 
@@ -1096,12 +1102,14 @@ class __GlobalCardPlayAnimationOverlayState
 
     // Estado inicial
     setState(() {
+      slidingStack = [widget.card];
       animationDuration = Duration.zero;
       cardPosition = startOffset;
       bgOpacity = 0.0;
       cardScale = 0.4;
       cardRotation = 0.0;
     });
+    ref.read(hiddenMesaCardsProvider.notifier).state = {};
 
     await Future.delayed(const Duration(milliseconds: 50));
     if (isDisposed || !mounted) return;
@@ -1142,6 +1150,7 @@ class __GlobalCardPlayAnimationOverlayState
 
     final isSmall = screenW < 480 || screenH < 750;
     final targetScale = (isSmall ? 60.0 : 70.0) / 120.0;
+    final captureScale = targetScale * 0.72; // Escala más pequeña para ver la carta de la mesa detrás
 
     // Fase 3: Capturas consecutivas sin overlay oscuro
     if (widget.capturedCards != null && widget.capturedCards!.isNotEmpty) {
@@ -1152,15 +1161,20 @@ class __GlobalCardPlayAnimationOverlayState
           setState(() {
             animationDuration = const Duration(milliseconds: 400);
             cardPosition = capPos;
-            // Escala para coincidir perfectamente con el tamaño de carta en mesa
-            cardScale = targetScale;
+            cardScale = captureScale;
             cardRotation = 0.0;
           });
           await Future.delayed(const Duration(milliseconds: 400));
           if (isDisposed || !mounted) return;
 
-          // Esperar 0.8 segundos sobre la carta
-          await Future.delayed(const Duration(milliseconds: 800));
+          // Una vez llega a la carta, la agrega al mazo deslizante y la oculta en la mesa
+          setState(() {
+            slidingStack.add(capCard);
+          });
+          ref.read(hiddenMesaCardsProvider.notifier).update((state) => {...state, capCard.id});
+
+          // Esperar 0.6 segundos mostrando la carta agregada al mazo
+          await Future.delayed(const Duration(milliseconds: 600));
           if (isDisposed || !mounted) return;
         }
       }
@@ -1169,11 +1183,13 @@ class __GlobalCardPlayAnimationOverlayState
     // Fase 4: Reducir la carta antes de completar
     setState(() {
       animationDuration = const Duration(milliseconds: 300);
-      // Escala para coincidir perfectamente con el tamaño de carta en mesa
       cardScale = targetScale;
     });
     await Future.delayed(const Duration(milliseconds: 300));
     if (isDisposed || !mounted) return;
+
+    // Limpiar cartas ocultas
+    ref.read(hiddenMesaCardsProvider.notifier).state = {};
 
     // Fase 5: Completar oficialmente la jugada en el provider
     ref.read(gameProvider.notifier).completePlayCard(widget.card);
@@ -1261,11 +1277,33 @@ class __GlobalCardPlayAnimationOverlayState
                 duration: animationDuration,
                 curve: Curves.easeInOut,
                 turns: cardRotation,
-                child: CardWidget(
-                  card: widget.card,
+                child: SizedBox(
                   width: 120,
                   height: 180,
-                  isPlayable: false,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: List.generate(slidingStack.length, (index) {
+                      final card = slidingStack[index];
+                      // Las cartas capturadas se apilan con un desplazamiento sutil y ligera rotación
+                      final double dx = index * 4.0;
+                      final double dy = -index * 4.0;
+                      final double angle = index * 0.02; // ~1.1 grados de rotación por carta
+
+                      return Positioned(
+                        left: dx,
+                        top: dy,
+                        child: Transform.rotate(
+                          angle: angle,
+                          child: CardWidget(
+                            card: card,
+                            width: 120,
+                            height: 180,
+                            isPlayable: false,
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
                 ),
               ),
             ),
