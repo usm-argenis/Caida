@@ -31,21 +31,25 @@ class AiPlayerPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenW = MediaQuery.of(context).size.width;
+    final screenH = MediaQuery.of(context).size.height;
+    final isSmall = screenW < 480 || screenH < 750;
+
     switch (position) {
       case PlayerPosition.north:
-        return _buildNorth();
+        return _buildNorth(context, isSmall);
       case PlayerPosition.west:
-        return _buildWest();
+        return _buildWest(context, isSmall);
       case PlayerPosition.east:
-        return _buildEast();
+        return _buildEast(context, isSmall);
     }
   }
 
   // ── NORTE: avatar en top-center, cartas en abanico hacia abajo ──
-  Widget _buildNorth() {
+  Widget _buildNorth(BuildContext context, bool isSmall) {
     return SizedBox(
-      width: 160,
-      height: 130,
+      width: isSmall ? 130 : 160,
+      height: isSmall ? 105 : 130,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -54,6 +58,7 @@ class AiPlayerPanel extends StatelessWidget {
             child: _NorthFanWidget(
               count: player.hand.length,
               isFaceDown: true,
+              isSmall: isSmall,
             ),
           ),
           // Avatar centrado en la parte superior
@@ -65,7 +70,7 @@ class AiPlayerPanel extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildAvatar(size: 48),
+                  _buildAvatar(size: isSmall ? 40 : 48),
                   const SizedBox(height: 2),
                   _buildNameTag(),
                 ],
@@ -74,7 +79,7 @@ class AiPlayerPanel extends StatelessWidget {
           ),
           if (speechBubbleText != null)
             Positioned(
-              top: -38,
+              top: isSmall ? -32 : -38,
               left: 0,
               right: 0,
               child: Center(
@@ -84,7 +89,7 @@ class AiPlayerPanel extends StatelessWidget {
           // Pilas de mazo/capturas a la izquierda del avatar (fuera del SizedBox)
           if (deckWidget != null || capturedWidget != null)
             Positioned(
-              right: 166,
+              right: isSmall ? 136 : 166,
               top: 8,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -99,7 +104,7 @@ class AiPlayerPanel extends StatelessWidget {
           // Última carta jugada a la derecha del avatar (fuera del SizedBox)
           if (lastPlayedCardWidget != null)
             Positioned(
-              left: 168,
+              left: isSmall ? 138 : 168,
               top: 8,
               child: lastPlayedCardWidget!,
             ),
@@ -109,10 +114,10 @@ class AiPlayerPanel extends StatelessWidget {
   }
 
   // ── OESTE: avatar en la izquierda, cartas en abanico hacia la derecha ──
-  Widget _buildWest() {
+  Widget _buildWest(BuildContext context, bool isSmall) {
     return SizedBox(
-      width: 110,
-      height: 180,
+      width: isSmall ? 80 : 110,
+      height: isSmall ? 140 : 180,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -121,6 +126,7 @@ class AiPlayerPanel extends StatelessWidget {
             child: _WestFanWidget(
               count: player.hand.length,
               isFaceDown: true,
+              isSmall: isSmall,
             ),
           ),
           // Avatar centrado verticalmente
@@ -133,16 +139,16 @@ class AiPlayerPanel extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildAvatar(size: 44),
+                  _buildAvatar(size: isSmall ? 36 : 44),
                   const SizedBox(height: 2),
-                  _buildNameTag(maxWidth: 70),
+                  _buildNameTag(maxWidth: isSmall ? 55 : 70),
                 ],
               ),
             ),
           ),
           if (speechBubbleText != null)
             Positioned(
-              bottom: 130, // por encima del avatar centrado
+              bottom: isSmall ? 100 : 130, // por encima del avatar centrado
               left: 0,
               right: 0,
               child: Center(
@@ -152,7 +158,7 @@ class AiPlayerPanel extends StatelessWidget {
           // Pilas de mazo/capturas debajo del avatar centrado
           if (deckWidget != null || capturedWidget != null)
             Positioned(
-              top: 130, // por debajo del avatar centrado
+              top: isSmall ? 100 : 130, // por debajo del avatar centrado
               left: 0,
               right: 0,
               child: Center(
@@ -168,8 +174,8 @@ class AiPlayerPanel extends StatelessWidget {
             ),
           if (lastPlayedCardWidget != null)
             Positioned(
-              right: -55,
-              top: 66, // alineado con el centro del avatar
+              right: isSmall ? -45 : -55,
+              top: isSmall ? 50 : 66, // alineado con el centro del avatar
               child: lastPlayedCardWidget!,
             ),
         ],
@@ -178,10 +184,10 @@ class AiPlayerPanel extends StatelessWidget {
   }
 
   // ── ESTE: avatar en la derecha, cartas en abanico hacia la izquierda ──
-  Widget _buildEast() {
+  Widget _buildEast(BuildContext context, bool isSmall) {
     return SizedBox(
-      width: 110,
-      height: 180,
+      width: isSmall ? 80 : 110,
+      height: isSmall ? 140 : 180,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -190,6 +196,7 @@ class AiPlayerPanel extends StatelessWidget {
             child: _EastFanWidget(
               count: player.hand.length,
               isFaceDown: true,
+              isSmall: isSmall,
             ),
           ),
           // Avatar centrado verticalmente
@@ -202,16 +209,16 @@ class AiPlayerPanel extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildAvatar(size: 44),
+                  _buildAvatar(size: isSmall ? 36 : 44),
                   const SizedBox(height: 2),
-                  _buildNameTag(maxWidth: 70),
+                  _buildNameTag(maxWidth: isSmall ? 55 : 70),
                 ],
               ),
             ),
           ),
           if (speechBubbleText != null)
             Positioned(
-              bottom: 130, // por encima del avatar centrado
+              bottom: isSmall ? 100 : 130, // por encima del avatar centrado
               left: 0,
               right: 0,
               child: Center(
@@ -221,7 +228,7 @@ class AiPlayerPanel extends StatelessWidget {
           // Pilas de mazo/capturas debajo del avatar centrado
           if (deckWidget != null || capturedWidget != null)
             Positioned(
-              top: 130, // por debajo del avatar centrado
+              top: isSmall ? 100 : 130, // por debajo del avatar centrado
               left: 0,
               right: 0,
               child: Center(
@@ -237,8 +244,8 @@ class AiPlayerPanel extends StatelessWidget {
             ),
           if (lastPlayedCardWidget != null)
             Positioned(
-              left: -55,
-              top: 66, // alineado con el centro del avatar
+              left: isSmall ? -45 : -55,
+              top: isSmall ? 50 : 66, // alineado con el centro del avatar
               child: lastPlayedCardWidget!,
             ),
         ],
@@ -321,17 +328,18 @@ class AiPlayerPanel extends StatelessWidget {
 class _NorthFanWidget extends StatelessWidget {
   final int count;
   final bool isFaceDown;
-  const _NorthFanWidget({required this.count, required this.isFaceDown});
+  final bool isSmall;
+  const _NorthFanWidget({required this.count, required this.isFaceDown, this.isSmall = false});
 
   @override
   Widget build(BuildContext context) {
     if (count == 0) return const SizedBox.shrink();
 
-    const cardW = 32.0;
-    const cardH = 48.0;
-    const originX = 80.0; // centro horizontal del SizedBox(width:160)
-    const originY = 24.0; // justo en el centro del avatar
-    const radius = 56.0;  // muy cerca del círculo del avatar
+    final cardW = isSmall ? 26.0 : 32.0;
+    final cardH = isSmall ? 38.0 : 48.0;
+    final originX = isSmall ? 65.0 : 80.0; // centro horizontal del SizedBox
+    final originY = isSmall ? 20.0 : 24.0; // justo en el centro del avatar
+    final radius = isSmall ? 42.0 : 56.0;  // muy cerca del círculo del avatar
     final totalAngle = math.min((count - 1) * 18.0, 80.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;
     // Norte: apunta hacia abajo (math.pi/2)
@@ -370,17 +378,18 @@ class _NorthFanWidget extends StatelessWidget {
 class _WestFanWidget extends StatelessWidget {
   final int count;
   final bool isFaceDown;
-  const _WestFanWidget({required this.count, required this.isFaceDown});
+  final bool isSmall;
+  const _WestFanWidget({required this.count, required this.isFaceDown, this.isSmall = false});
 
   @override
   Widget build(BuildContext context) {
     if (count == 0) return const SizedBox.shrink();
 
-    const cardW = 32.0;
-    const cardH = 48.0;
-    const originX = 55.0; // centro del avatar (width=110)
-    const originY = 90.0; // centro del avatar (height=180)
-    const radius = 56.0;  // muy cerca del círculo del avatar
+    final cardW = isSmall ? 26.0 : 32.0;
+    final cardH = isSmall ? 38.0 : 48.0;
+    final originX = isSmall ? 40.0 : 55.0; // centro del avatar
+    final originY = isSmall ? 70.0 : 90.0; // centro del avatar
+    final radius = isSmall ? 42.0 : 56.0;  // muy cerca del círculo del avatar
     final totalAngle = math.min((count - 1) * 18.0, 70.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;
     // Oeste: apunta hacia la derecha (0 radianes)
@@ -419,17 +428,18 @@ class _WestFanWidget extends StatelessWidget {
 class _EastFanWidget extends StatelessWidget {
   final int count;
   final bool isFaceDown;
-  const _EastFanWidget({required this.count, required this.isFaceDown});
+  final bool isSmall;
+  const _EastFanWidget({required this.count, required this.isFaceDown, this.isSmall = false});
 
   @override
   Widget build(BuildContext context) {
     if (count == 0) return const SizedBox.shrink();
 
-    const cardW = 32.0;
-    const cardH = 48.0;
-    const originX = 55.0; // centro del avatar (width=110)
-    const originY = 90.0; // centro del avatar (height=180)
-    const radius = 56.0;  // muy cerca del círculo del avatar
+    final cardW = isSmall ? 26.0 : 32.0;
+    final cardH = isSmall ? 38.0 : 48.0;
+    final originX = isSmall ? 40.0 : 55.0; // centro del avatar
+    final originY = isSmall ? 70.0 : 90.0; // centro del avatar
+    final radius = isSmall ? 42.0 : 56.0;  // muy cerca del círculo del avatar
     final totalAngle = math.min((count - 1) * 18.0, 70.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;
     // Este: apunta hacia la izquierda (math.pi radianes)

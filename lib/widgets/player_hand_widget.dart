@@ -29,6 +29,10 @@ class PlayerHandWidget extends StatefulWidget {
 class _PlayerHandWidgetState extends State<PlayerHandWidget> {
   @override
   Widget build(BuildContext context) {
+    final screenW = MediaQuery.of(context).size.width;
+    final screenH = MediaQuery.of(context).size.height;
+    final isSmall = screenW < 480 || screenH < 750;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -77,6 +81,7 @@ class _PlayerHandWidgetState extends State<PlayerHandWidget> {
             cards: widget.player.hand,
             isActive: widget.isActive && !widget.isAnimating, // Bug 3: desactivar si hay animación
             selectedCard: null,
+            isSmall: isSmall,
             onCardTap: (card) {
               if (!widget.isActive) return;
               if (widget.isAnimating) return; // Bug 3: bloqueo adicional en UI
@@ -95,12 +100,14 @@ class _HumanFanWidget extends StatelessWidget {
   final List<CardModel> cards;
   final bool isActive;
   final CardModel? selectedCard;
+  final bool isSmall;
   final Function(CardModel) onCardTap;
 
   const _HumanFanWidget({
     required this.cards,
     required this.isActive,
     required this.selectedCard,
+    this.isSmall = false,
     required this.onCardTap,
   });
 
@@ -109,15 +116,15 @@ class _HumanFanWidget extends StatelessWidget {
     final count = cards.length;
     if (count == 0) return const SizedBox.shrink();
 
-    const cardW = 54.0;
-    const cardH = 82.0;
-    const fanH = 120.0;
-    const fanW = 280.0;
+    final cardW = isSmall ? 46.0 : 54.0;
+    final cardH = isSmall ? 70.0 : 82.0;
+    final fanH = isSmall ? 100.0 : 120.0;
+    final fanW = isSmall ? 240.0 : 280.0;
 
     // Punto de origen: centro-abajo del widget
-    const originX = fanW / 2;
-    const originY = 175.0;
-    const radius = 100.0;
+    final originX = fanW / 2;
+    final originY = isSmall ? 145.0 : 175.0;
+    final radius = isSmall ? 80.0 : 100.0;
 
     final totalAngle = math.min((count - 1) * 16.0, 64.0) * math.pi / 180;
     final startAngle = -totalAngle / 2;

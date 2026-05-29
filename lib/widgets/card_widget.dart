@@ -64,8 +64,8 @@ class _CardWidgetState extends State<CardWidget>
 
   @override
   Widget build(BuildContext context) {
-    final w = widget.width ?? 65.0;
-    final h = widget.height ?? 100.0;
+    final w = widget.width ?? 55.0;
+    final h = widget.height ?? 85.0;
 
     return AnimatedBuilder(
       animation: _controller,
@@ -146,8 +146,8 @@ class _CardWidgetState extends State<CardWidget>
   Widget _buildFront() {
     if (widget.card == null) return const SizedBox.shrink();
     
-    final w = widget.width ?? 65.0;
-    final h = widget.height ?? 95.0;
+    final w = widget.width ?? 55.0;
+    final h = widget.height ?? 85.0;
     
     final color = widget.card!.isRed ? AppTheme.cardRed : AppTheme.cardBlack;
     final displayVal = widget.card!.displayValue;

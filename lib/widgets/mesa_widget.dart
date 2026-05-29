@@ -40,8 +40,8 @@ class MesaWidget extends StatelessWidget {
         return CardWidget(
           key: key,
           card: card,
-          width: 50,
-          height: 80,
+          width: 55,
+          height: 85,
           isPlayable: false,
         );
       }).toList(),

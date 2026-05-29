@@ -19,6 +19,9 @@ class GameScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameState = ref.watch(gameProvider);
+    final screenW = MediaQuery.of(context).size.width;
+    final screenH = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenW < 480 || screenH < 750;
 
     if (gameState == null) {
       return Scaffold(
@@ -113,12 +116,14 @@ class GameScreen extends ConsumerWidget {
 
               // ── CARTAS EN MESA (centro) ──
               Positioned(
-                top: 130,
-                left: 80,
-                right: 80,
-                bottom: 200,
+                top: isSmallScreen ? 100 : 130,
+                left: isSmallScreen ? 70 : 80,
+                right: isSmallScreen ? 70 : 80,
+                bottom: isSmallScreen ? 145 : 200,
                 child: Center(
-                  child: MesaWidget(gameState: gameState),
+                  child: IgnorePointer(
+                    child: MesaWidget(gameState: gameState),
+                  ),
                 ),
               ),
 
@@ -1040,10 +1045,10 @@ class __GlobalCardPlayAnimationOverlayState
     final overlayBox = context.findRenderObject() as RenderBox?;
     if (overlayBox != null) {
       final localInOverlay = overlayBox.globalToLocal(localPos);
-      // Centrar respecto a la carta de mesa (62x95)
-      return localInOverlay + const Offset(31, 47.5);
+      // Centrar respecto a la nueva carta de mesa (55x85)
+      return localInOverlay + const Offset(27.5, 42.5);
     }
-    return localPos + const Offset(31, 47.5);
+    return localPos + const Offset(27.5, 42.5);
   }
 
   Future<void> _runSequence() async {
@@ -1127,7 +1132,8 @@ class __GlobalCardPlayAnimationOverlayState
           setState(() {
             animationDuration = const Duration(milliseconds: 400);
             cardPosition = capPos;
-            cardScale = 0.9;
+            // Escala para coincidir perfectamente con la carta en mesa de 55x85 (55/120 = 0.4583)
+            cardScale = 55.0 / 120.0;
             cardRotation = 0.0;
           });
           await Future.delayed(const Duration(milliseconds: 400));
@@ -1143,7 +1149,8 @@ class __GlobalCardPlayAnimationOverlayState
     // Fase 4: Reducir la carta antes de completar
     setState(() {
       animationDuration = const Duration(milliseconds: 300);
-      cardScale = 0.4;
+      // Escala para coincidir perfectamente con la carta en mesa de 55x85 (55/120 = 0.4583)
+      cardScale = 55.0 / 120.0;
     });
     await Future.delayed(const Duration(milliseconds: 300));
     if (isDisposed || !mounted) return;
